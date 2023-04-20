@@ -1,6 +1,6 @@
-PLUGIN.name = "Turn Based Combat System"
-PLUGIN.author = "SHOOTER#5269"
-PLUGIN.description = "Implements a turn based combat system, that works for PvE, PvP, PvPvE"
+PLUGIN.name = "Cyberpunk turn fight system"
+PLUGIN.author = "Крыжовник#4511 (На базе плагина SHOOTER#5269)"
+PLUGIN.description = "Реализует пошаговую боевую систему, которая работает для PvE, PvP, PvPvE"
 
 --[[
 Буги вуги:
