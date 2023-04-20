@@ -57,7 +57,7 @@ PLUGIN.TotalCombats = PLUGIN.TotalCombats or {  }
 
 PLUGIN.Data = {  }
 
-PLUGIN.IgnoredNPCs = { -- NPCs that you don't enter turn based conbat with, most flying NPCs should be added due to them not liking to freeze when not there turn is active
+PLUGIN.IgnoredNPCs = { -- - NPC, с которыми вы не вступаете в пошаговый бой, большинство летающих NPC должны быть добавлены из-за того, что они не зависают когда начинается ход.
 	['npc_turret_floor'] = true,
 	['npc_rollermine'] = true,
 	['npc_manhack'] = true,
@@ -203,20 +203,20 @@ if (SERVER) then
 	end
 	
 	function PLUGIN:BeginWarmUp( entity )
-		self.Data[1] = "WarmUp" -- current state
-		self.Data[2] = ix.config.Get("warmuptimer", 5) + CurTime() -- timer for warmup, and turns
-		self.Data[3] = 0 -- player counter
-		self.Data[4] = 0 -- NPC counter
-		self.Data[5] = 6 -- turn pointer
+		self.Data[1] = "WarmUp" -- текущее состояние
+		self.Data[2] = ix.config.Get("warmuptimer", 5) + CurTime() -- таймер для разминки и включения
+		self.Data[3] = 0 -- счетчик игроков
+		self.Data[4] = 0 -- счетчик НПС
+		self.Data[5] = 6 -- счетчик ходов
 		if entity:GetClass() == "player" then
 			entity:SetNWBool( "IsInCombat", true )
 			entity:SetNWBool( "WarmUpBegin", true )
-			--entity:SetMaterial("models/shiny") -- just for testing
+			--entity:SetMaterial("models/shiny") -- чисто для тестов
 			entity:SetNWBool( "WarmUp", true) 
 			table.insert( self.Data, entity )
 		elseif entity:IsNPC() then
 			entity:SetNWBool( "IsInCombat", true )
-			--entity:SetMaterial("models/shiny") -- just for testing
+			--entity:SetMaterial("models/shiny") -- тупа для тестов
 			entity:SetNWBool( "WarmUp", true)
 			entity:SetNWBool("MyTurn", false)
 			table.insert( self.Data, entity )
@@ -229,7 +229,7 @@ if (SERVER) then
 				if self.IgnoredNPCs[ent:GetClass()] == nil then
 					if IsValid( ent ) then
 						timer.Simple( 0.01, function()
-							if !table.IsEmpty(self.TotalCombats) then -- just for server starts
+							if !table.IsEmpty(self.TotalCombats) then -- только для запуска сервера
 								for k, v in pairs(self.TotalCombats) do 
 									for k2, v2 in pairs(v) do
 										if IsEntity( v2 ) then
@@ -243,7 +243,7 @@ if (SERVER) then
 													if ent:EyePos():Distance( v2:EyePos() ) <= ix.config.Get("radius", 500) then
 														if ent:GetClass() == "player" and ent:Alive() then
 															ent:SetNWBool( "WarmUpBegin", true )
-															--ent:SetMaterial("models/shiny") -- just for testing
+															--ent:SetMaterial("models/shiny") -- тестируется
 															ent:SetNWBool( "WarmUp", true) 
 															ent.btimer = false
 															table.insert( v, #v, ent )
@@ -253,7 +253,7 @@ if (SERVER) then
 															ent:SetNWBool( "IsInCombat", true )
 															break
 														elseif ent:IsNPC() then
-															--ent:SetMaterial("models/shiny") -- just for testing
+															--ent:SetMaterial("models/shiny") -- тоже самое
 															ent:SetNWBool( "WarmUp", true)
 															ent:SetNWBool("MyTurn", false)
 															table.insert( v, #v, ent )
@@ -294,8 +294,8 @@ if (SERVER) then
 					end
 				end
 			end
-			-- Multidimential table setup
-			if !table.IsEmpty(self.Data) then -- A TON OF BULLSHIT JUST TO GET MULTIDIMENTIONAL TABLES TO BE CREATED
+			-- Настройка многомерной таблицы
+			if !table.IsEmpty(self.Data) then -- КУЧА ДЕРЬМА ТОЛЬКО ДЛЯ ТОГО, ЧТОБЫ СОЗДАТЬ МНОГОМЕРНЫЕ ТАБЛИЦЫ
 				local NewTable = {}
 				for i, v in pairs( self.Data ) do
 					NewTable[ #NewTable + 1 ] = v
@@ -304,17 +304,17 @@ if (SERVER) then
 				self.TotalCombats[ #self.TotalCombats + 1 ] = NewTable
 			end
 
-			-- A work around for players getting bugged into constantly being in combat
+			-- Обходной путь для игроков, которых заставляют постоянно находиться в бою
 			if table.IsEmpty(self.TotalCombats) then 
 				for k, v in pairs(player.GetAll()) do
 					self:ResetCombatStatus(v)
 				end
 			end
 
-			if !table.IsEmpty(self.TotalCombats) then -- just for server starts
+			if !table.IsEmpty(self.TotalCombats) then -- для старта сервера
 				if ix.config.Get("Turn Based Combat On/Off", true) then
-					for k, v in pairs(self.TotalCombats) do -- Goes through the every single combat encounter table
-						-- Warmup Timer
+					for k, v in pairs(self.TotalCombats) do -- Просматривает таблицу каждого отдельного боевого столкновения
+						-- Таймер разминки
 						if v[1] == "WarmUp" then
 							if v[2] < CurTime() then
 								v[1] = "Combat"
@@ -324,7 +324,7 @@ if (SERVER) then
 						end
 						
 						
-						-- Player and NPC counter
+						-- Счетчик игроков и НПС
 						v[3] = 0
 						v[4] = 0
 						for k2, v2 in pairs(v) do
@@ -348,7 +348,7 @@ if (SERVER) then
 										v2:SetNWInt("CombatNPCCount", v[4])
 										v2:SetNWInt("CombatPlayerCount", v[3])
 									else
-										if !v2:GetNWBool("MyTurn", false) then -- freeze NPCs
+										if !v2:GetNWBool("MyTurn", false) then -- заморозка НПС
 											v2:SetCondition( 67 )
 										else -- unfreeze NPCs
 											v2:SetCondition( 68 )
@@ -360,7 +360,7 @@ if (SERVER) then
 							end
 						end
 						
-						-- Remove dups
+						-- Уборка дубликатов
 						timer.Simple( 0.1, function()
 							for k2, v2 in pairs(v) do
 								for k3, v3 in pairs(v) do
@@ -371,7 +371,7 @@ if (SERVER) then
 							end
 						end)
 						
-						-- the end condition/table remover
+						-- конечное условие/удаление таблицы
 						timer.Simple( 0.1, function()
 							if ((v[4] == 0 and v[3] <= 1) or (v[4] >= 0 and v[3] == 0)) or v[1] == "End Combat" then
 								for k2, v2 in pairs(v) do
@@ -383,7 +383,7 @@ if (SERVER) then
 												timer.Simple( 1, function()
 													v2:SetCondition( 68 )
 													v2:SetNWBool( "IsInCombat", false )
-													--v2:SetMaterial("") -- just for testing
+													--v2:SetMaterial("") -- тесты
 													v2:SetNWBool( "MyTurn", true )
 													v2:SetNWBool( "WarmUp", false)
 												end)
@@ -395,19 +395,19 @@ if (SERVER) then
 							end	
 						end)
 
-						-- Turn based combat
+						-- Пошаговая боевка
 						if v[1] == "Combat" then
 							if IsEntity(v[v[5]]) and IsValid( v[v[5]] ) then
 								if v[v[5]]:GetClass() == "player" then
-									-- the code that allows the player to do their turn
+									-- код, который позволяет игроку выполнить свой ход
 									
-									-- at the start of the players turn ran once
+									-- в начале хода игроки действуют один раз
 									if v[2] - ix.config.Get("playertimeammount", 10) + 0.1 >= CurTime() then 
 										v[v[5]]:SetNWInt("AP", ix.config.Get("playeractionpoints", 3))
 										v[v[5]]:SetNWVector( "StartPos", v[v[5]]:GetPos() )
 										v[v[5]]:SetNWFloat("TurnTimer", v[2])
 										
-										-- Checks for if the player tried to leave there last turn and checks if all players in combat want to end combat
+										-- Проверяет, пытался ли игрок уйти оттуда в последний ход, и проверяет, все ли игроки в бою хотят завершить бой
 										if v[v[5]]:GetNWBool("PlayerTurnCheck", true) and v[v[5]]:GetNWBool("TryingToLeave", false) then 
 											for k2, v2 in pairs(v) do
 												if IsEntity( v2 ) and v2:IsPlayer() then
@@ -424,7 +424,7 @@ if (SERVER) then
 										end	
 									end
 									
-									-- The lose of AP when the player moves
+									-- Потеря AP при перемещении игрока
 									if v[v[5]]:GetNWVector( "StartPos", v[v[5]]:GetPos() ):Distance( v[v[5]]:GetPos() ) > ix.config.Get("movementradius", 10) * v[v[5]]:GetNWInt("AP", ix.config.Get("playeractionpoints", 3)) then
 										local trace = util.TraceLine( {
 											start = v[v[5]]:GetPos()+Vector(0,0,30),
@@ -436,16 +436,16 @@ if (SERVER) then
 										v[v[5]]:SetNWInt("AP", v[v[5]]:GetNWInt("AP", 3) - 1)
 									end
 									
-									-- skip your turn with walk
+									-- пропустите свою очередь с помощью ходьбы
 									if v[v[5]]:KeyPressed( IN_WALK ) and IsValid(v[v[5]]) and v[v[5]]:Alive() and IsValid(v[v[5]]:GetActiveWeapon()) then
-										-- if the player uses AP then skips it's not considered tryingtoleave
+										-- если игрок использует AP, а затем пропускает, это не считается попыткой уйти
 										if v[v[5]]:GetNWInt("AP", 3) == ix.config.Get("playeractionpoints", 3) then
 											v[v[5]]:SetNWBool("TryingToLeave", true)
 										end 
 										v[v[5]]:SetNWInt("AP", 0)
 									end
 									
-									-- if player fires/holds trigger they lose AP for each second
+									-- если игрок нажимает / удерживает спусковой крючок, он теряет AP на каждую секунду
 									if v[v[5]]:KeyPressed( IN_ATTACK ) then
 										v[v[5]]:SetNWInt("AP", v[v[5]]:GetNWInt("AP", 3) - 1)
 										v[v[5]]:SetNWFloat("TimeBetweenShots", CurTime() + 1)
@@ -461,14 +461,14 @@ if (SERVER) then
 									end
 									
 
-									--ran constantly in the turn
+									
 									--timer.Simple( 0.11, function()
 										v[v[5]]:SetNWBool( "MyTurn", true )
 										v[v[5]]:SetNWBool( "WarmUp", false )
 									--end)	
 									
-									-- ran at the end of the players turn
-									if v[2] < CurTime() or v[v[5]]:GetNWInt("AP", 0) <= 0 then -- The timer to count how long the player has till their turn is up
+									
+									if v[2] < CurTime() or v[v[5]]:GetNWInt("AP", 0) <= 0 then -- Таймер для подсчета времени, оставшегося у игрока до истечения его очереди
 										if v[v[5]]:GetNWInt("AP", 0) == ix.config.Get("playeractionpoints", 3) then
 											v[v[5]]:SetNWBool("TryingToLeave", true)
 										end
@@ -493,12 +493,12 @@ if (SERVER) then
 										v[5] = v[5] + 1
 									end
 								elseif v[v[5]]:IsNPC() then
-									-- the code that allows the NPC to do their turn
+									-- код, который позволяет NPC выполнять свою очередь
 									
 									v[v[5]]:SetNWBool( "MyTurn", true )
 									
 									
-									if v[2] < CurTime() then -- The timer to count how long the NPC has till their turn is up
+									if v[2] < CurTime() then -- Таймер для подсчета времени, оставшегося у NPC до истечения их очереди
 										if IsValid(v[v[5] + 1]) then
 											if v[v[5] + 1]:IsNPC() then
 												v[2] = ix.config.Get("npctimeammount", 5) + CurTime()
@@ -643,7 +643,7 @@ if (CLIENT) then
 			table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
 		end
 
-		local a = math.rad( 0 ) -- This is needed for non absolute segment counts
+		local a = math.rad( 0 ) -- Это необходимо для неабсолютного подсчета сегментов
 		table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
 
 		surface.DrawPoly( cir )
