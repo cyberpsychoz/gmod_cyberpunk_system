@@ -3,17 +3,18 @@ PLUGIN.author = "SHOOTER#5269"
 PLUGIN.description = "Implements a turn based combat system, that works for PvE, PvP, PvPvE"
 
 --[[
-Known Bugs:
+Буги вуги:
 
-- The plugin will not work on singleplayer. I have no clue why It just don't.
-- The server may spit out nul values when players are flip flopping between turns. The combat works normally but it's still going to spit it out.
-- Some NPC won't freeze properly and will continue to attack even when frozen 
-- Projectile based weapons can not initiate ranged combat
-- Granades will still explode. (I'd love to have them join the turn order but for some reason they aren't counted as true NPCs)
+- Плагин не будет работать в одиночном режиме. Я понятия не имею, почему этого просто не происходит.
+- Сервер может выдавать нулевые значения, когда игроки переключаются между ходами.
+- Некоторые NPC не замораживаются должным образом и продолжают атаковать, даже будучи замороженными.
+- Оружие, основанное на метательных снарядах, не может начать бой на дальнем расстоянии
+- Гранаты все равно будут взрываться. (Я бы с удовольствием, чтобы они присоединились к порядку хода, но по какой-то причине они не считаются настоящими NPC)
 
-Notes: 
+Заметка: 
 
-- If I get more freetime/plan on reworking this plugin undo the massive think hook, people will dislike my use of it. i'm aware think hooks have a massive hit to preformance.
+- Если у меня появится больше свободного времени / я планирую переработать этот плагин, отменить массовый think hook, 
+	людям не понравится, что я его использую.
 --]]
 
 
