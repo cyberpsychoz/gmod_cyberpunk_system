@@ -2,6 +2,8 @@ PLUGIN.name = "Cyberpunk system"
 PLUGIN.author = "Крыжовник#4511"
 PLUGIN.desc = "Плагин вдохновленный схемой ReHost'а."
 
+GM = GM or GAMEMODE
+
 -- Вход в боевой режим
 function PLUGIN:PlayerButtonDown(ply, button)
     if button == KEY_7 then
