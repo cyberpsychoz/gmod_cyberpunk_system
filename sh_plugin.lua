@@ -1,4 +1,5 @@
 -- Автор этого плагина больной на всю голову
+-- А еще очень любит Rehost'а
 PLUGIN.name = "Cyberpunk RED Combat System"
 PLUGIN.author = "Крыжовник#4511"
 PLUGIN.description = "A plugin that implements the combat system of Cyberpunk RED tabletop RPG in Gmod Helix."
