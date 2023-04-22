@@ -210,7 +210,7 @@ ix.command.Add("Heal", { -- добавляем команду /heal для ле�
 	},
 	OnRun = function(self, client, target, part, amount)
 		-- PrintTable({target, part, amount}) -- это выведет содержимое таблицы arguments в консоль (дебаг)
-		if (clientt and client:IsPlayer()) then -- если цель - игрок
+		if (client and client:IsPlayer()) then -- если цель - игрок
 			local character = client:GetCharacter() -- получаем его персонажа
 
 			if (character) then -- если персонаж существует
@@ -307,6 +307,30 @@ ix.command.Add("Injure", { -- добавляем команду /injure для �
 		else -- если цель не игрок
 			return "Неправильная цель" -- возвращаем сообщение об ошибке
 		end
+	end
+})
+
+
+ix.command.Add("Stats", { -- добавляем команду /stats для вывода здоровья персонажа
+	-- Описание команды
+	description = "Показывает текущее здоровье персонажа.",
+	-- Функция, которая выполняется при вызове команды
+	OnRun = function(self, client)
+		-- Получаем тело персонажа
+		local character = client:GetCharacter()
+		-- Создаем строку для вывода здоровья
+		local output = "Ваше здоровье:\n"
+		-- Добавляем здоровье каждой части тела
+		for part, data in pairs(BODY_PARTS) do
+			if type(character) == "Сharacter" then
+			  local partHealth = character:GetData(part .. "hp", BODY_PARTS[part].hp)
+			  output = output .. data.name .. ": " .. partHealth .. "\n"
+			else
+			  print("character is not a Character object!")
+			end
+		end
+		-- Выводим строку в чат
+		client:Notify(output)
 	end
 })
 
