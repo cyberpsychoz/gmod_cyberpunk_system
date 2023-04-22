@@ -199,6 +199,7 @@ ix.command.Add("Heal", { -- добавляем команду /heal для ле�
 		bit.bor(ix.type.number, ix.type.optional)
 	},
 	OnRun = function(self, client, target, part, amount)
+		PrintTable(arguments) -- это выведет содержимое таблицы arguments в консоль (дебаг)
 		if (target and target:IsPlayer()) then -- если цель - игрок
 			local character = target:GetCharacter() -- получаем его персонажа
 
